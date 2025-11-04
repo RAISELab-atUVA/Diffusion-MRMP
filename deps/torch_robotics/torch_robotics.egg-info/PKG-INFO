@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: torch_robotics
+Version: 0.0.0
+Summary: Full Differentiable Kinematics Tree Implementation constructed from URDF
+Author: An Thai Le, Joao Carvalho
+Author-email: an@robots-learning.de, joao@robots-learning.de
+License-File: LICENSE
+Requires-Dist: pyyaml
+Requires-Dist: urdf-parser-py
+Requires-Dist: matplotlib
+Requires-Dist: trimesh
+Requires-Dist: einops

@@ -1,0 +1,16 @@
+LICENSE
+MANIFEST.in
+README.md
+requirements.txt
+setup.py
+experiment_launcher/__init__.py
+experiment_launcher/decorators.py
+experiment_launcher/exceptions.py
+experiment_launcher/launcher.py
+experiment_launcher/utils.py
+experiment_launcher.egg-info/PKG-INFO
+experiment_launcher.egg-info/SOURCES.txt
+experiment_launcher.egg-info/dependency_links.txt
+experiment_launcher.egg-info/not-zip-safe
+experiment_launcher.egg-info/requires.txt
+experiment_launcher.egg-info/top_level.txt

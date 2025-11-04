@@ -1,0 +1,10 @@
+Metadata-Version: 2.1
+Name: mp_baselines
+Version: 0.0.0
+Summary: Motion Planning Baselines
+Author: An T. Le, Joao Carvalho
+Author-email: an@robot-learning.de, joao@robot-learning.de
+License-File: LICENSE
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Requires-Dist: cholespy

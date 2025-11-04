@@ -1,0 +1,19 @@
+Metadata-Version: 2.1
+Name: experiment-launcher
+Version: 2.3
+Summary: A Python toolkit for launching experiments.
+Home-page: https://git.ias.informatik.tu-darmstadt.de/common/experiment_launcher
+Author: Davide Tateo, Joao Carvalho
+Author-email: davide@robot-learning.de, joao@robot-learning.de
+License: MIT
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+License-File: LICENSE
+Requires-Dist: joblib
+Requires-Dist: gitpython
+Requires-Dist: numpy
+Requires-Dist: pyyaml
+Requires-Dist: wandb
+
+experiment_launcher is a Python library used to run experiments. Supports Joblib and slurm jobs.
