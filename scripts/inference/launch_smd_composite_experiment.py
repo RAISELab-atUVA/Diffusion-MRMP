@@ -61,6 +61,15 @@ if __name__ == "__main__":
     parser.add_argument("--tolerance", type=float, default=1e-3, help="Convergence tolerance for ALM.")
     parser.add_argument("--projection_step", type=int, nargs='+', default=[15, 5], help="Projection steps used during sampling.")
     parser.add_argument("--runtime_limit", type=int, default=100000, help="Runtime limit for the experiment.")
+    parser.add_argument("--map_name", type=str, default='instances_basic', help="Runtime limit for the experiment.")
+    parser.add_argument("--experiment_instance_names", type=str, nargs='+', 
+                            default=[
+                                "EnvEmptyNoWait2DRobotCompositeThreePlanarDiskRandom",
+                                # "EnvEmptyNoWait2DRobotCompositeSixPlanarDiskRandom",
+                                # "EnvEmptyNoWait2DRobotCompositeNinePlanarDiskRandom"
+                            ],
+                            help="List of experiment instance names to run.")
+
     
     args = parser.parse_args()
 
@@ -77,47 +86,41 @@ if __name__ == "__main__":
     runtime_limit = args.runtime_limit
     num_trials_per_combination = 1
     render_animation = True
-    experiment_instance_names = [
-        # "EnvEmptyNoWait2DRobotCompositeThreePlanarDiskRandom",
-        # "EnvEmptyNoWait2DRobotCompositeSixPlanarDiskRandom",
-        "EnvEmptyNoWait2DRobotCompositeNinePlanarDiskRandom",
-    ]
 
     
 
-    for map_name in ["instances_dense"]:
-        for sample_idx in range(args.start_index, args.end_index):
-            for instance_name in experiment_instance_names:
-                experiment_config = MultiAgentPlanningExperimentConfig()
+    for sample_idx in range(args.start_index, args.end_index):
+        for instance_name in args.experiment_instance_names:
+            experiment_config = MultiAgentPlanningExperimentConfig()
 
-                experiment_config.instance_idx = sample_idx
-                experiment_config.map_name = map_name
-                experiment_config.res_base_dir = args.save_path
+            experiment_config.instance_idx = sample_idx
+            experiment_config.map_name = args.map_name
+            experiment_config.res_base_dir = args.save_path
 
-                experiment_config.num_agents_l = []
-                if "two" in instance_name.lower():
-                    experiment_config.num_agents_l = [2]
-                elif "three" in instance_name.lower():
-                    experiment_config.num_agents_l = [3]
-                    init_traj4proj = pickle.load(open(f'../../init4proj_data/{map_name}_init4proj_agent_3.pkl', 'rb'))
-                elif "six" in instance_name.lower():
-                    experiment_config.num_agents_l = [6]
-                    init_traj4proj = pickle.load(open(f'../../init4proj_data/{map_name}_init4proj_agent_6.pkl', 'rb'))
-                elif "nine" in instance_name.lower():
-                    experiment_config.num_agents_l = [9]
-                    init_traj4proj = pickle.load(open(f'../../init4proj_data/{map_name}_init4proj_agent_9.pkl', 'rb'))
+            experiment_config.num_agents_l = []
+            if "two" in instance_name.lower():
+                experiment_config.num_agents_l = [2]
+            elif "three" in instance_name.lower():
+                experiment_config.num_agents_l = [3]
+                init_traj4proj = pickle.load(open(f'../../init4proj_data/{map_name}_init4proj_agent_3.pkl', 'rb'))
+            elif "six" in instance_name.lower():
+                experiment_config.num_agents_l = [6]
+                init_traj4proj = pickle.load(open(f'../../init4proj_data/{map_name}_init4proj_agent_6.pkl', 'rb'))
+            elif "nine" in instance_name.lower():
+                experiment_config.num_agents_l = [9]
+                init_traj4proj = pickle.load(open(f'../../init4proj_data/{map_name}_init4proj_agent_9.pkl', 'rb'))
 
-                
-
-                experiment_config.instance_name = instance_name
-                experiment_config.init_traj4proj = init_traj4proj[sample_idx]
-                experiment_config.proj_params = proj_params
-
-                experiment_config.stagger_start_time_dt = stagger_start_time_dt
-                experiment_config.multi_agent_planner_class_l = ["SMDComposite"]
-                experiment_config.single_agent_planner_class = "SMDEnsemble"
-                experiment_config.runtime_limit = runtime_limit
-                experiment_config.num_trials_per_combination = num_trials_per_combination
-                experiment_config.render_animation = render_animation
             
-                run_multi_agent_experiment(experiment_config)
+
+            experiment_config.instance_name = instance_name
+            experiment_config.init_traj4proj = init_traj4proj[sample_idx]
+            experiment_config.proj_params = proj_params
+
+            experiment_config.stagger_start_time_dt = stagger_start_time_dt
+            experiment_config.multi_agent_planner_class_l = ["SMDComposite"]
+            experiment_config.single_agent_planner_class = "SMDEnsemble"
+            experiment_config.runtime_limit = runtime_limit
+            experiment_config.num_trials_per_combination = num_trials_per_combination
+            experiment_config.render_animation = render_animation
+        
+            run_multi_agent_experiment(experiment_config)
