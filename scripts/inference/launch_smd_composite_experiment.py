@@ -61,7 +61,7 @@ if __name__ == "__main__":
     parser.add_argument("--tolerance", type=float, default=1e-3, help="Convergence tolerance for ALM.")
     parser.add_argument("--projection_step", type=int, nargs='+', default=[15, 5], help="Projection steps used during sampling.")
     parser.add_argument("--runtime_limit", type=int, default=100000, help="Runtime limit for the experiment.")
-    parser.add_argument("--map_name", type=str, default='instances_basic', help="Runtime limit for the experiment.")
+    parser.add_argument("--map_name", type=str, default='instances_simple', help="Runtime limit for the experiment.")
     parser.add_argument("--experiment_instance_names", type=str, nargs='+', 
                             default=[
                                 "EnvEmptyNoWait2DRobotCompositeThreePlanarDiskRandom",
