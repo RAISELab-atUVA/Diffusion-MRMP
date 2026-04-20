@@ -109,6 +109,55 @@ This will:
 2. Generate motion plans for test instances
 3. Evaluate collision metrics
 
+## Drift Flow Matching Integration
+
+This checkout now supports a **DFM trajectory generator** alongside the original diffusion generator. The planner,
+projection, collision checking, and result-directory behavior stay unchanged; only the learned trajectory prior is
+swappable.
+
+### New generator surface
+
+- `generator_family`: `diffusion` or `dfm`
+- `generator_model_class`: generator implementation class
+- `generator_rollout_steps`: sampling rollout steps
+- `dfm_*`: Drift Flow Matching hyperparameters and batching controls
+
+For DFM training, use one of the example configs in `configs/experiments/`
+and run:
+
+```bash
+python scripts/train/train_generator.py --config configs/experiments/composite_three_dfm.yaml
+```
+
+The generated checkpoint layout remains:
+
+```text
+data_trained_models/<model_id>/checkpoints/ema_model_current_state_dict.pth
+```
+
+so `SMDComposite`, `SMD`, and `SMDEnsemble` can keep loading trained models through the existing planner code paths.
+
+## UVA Runtime
+
+The integrated repo now carries a UVA-first runtime contract with:
+
+- `runtime.project_name`
+- `/home/$USER/{project_name}`
+- `/scratch/$USER/{project_name}/data`
+- `/scratch/$USER/{project_name}/runs`
+- `/home/$USER/envs/{project_name}`
+
+Helper scripts:
+
+```bash
+export SMD_PROJECT_NAME=Diffusion_MRMP_DFM
+bash scripts/uva/bootstrap_home_checkout.sh
+bash scripts/uva/setup_miniforge_env.sh
+sbatch --export=SMD_PROJECT_NAME="$SMD_PROJECT_NAME",SMD_CONFIG=/home/$USER/$SMD_PROJECT_NAME/configs/experiments/composite_three_dfm.yaml /home/$USER/$SMD_PROJECT_NAME/scripts/slurm/train_generator.sbatch
+sbatch --export=SMD_PROJECT_NAME="$SMD_PROJECT_NAME" /home/$USER/$SMD_PROJECT_NAME/scripts/slurm/inference_composite.sbatch
+sbatch --export=SMD_PROJECT_NAME="$SMD_PROJECT_NAME" /home/$USER/$SMD_PROJECT_NAME/scripts/slurm/check_collision.sbatch
+```
+
 
 
 ## Citation

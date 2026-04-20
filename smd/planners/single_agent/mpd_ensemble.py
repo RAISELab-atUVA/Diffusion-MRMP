@@ -35,10 +35,10 @@ from typing import Tuple, List, Dict
 
 from experiment_launcher import single_experiment_yaml, run_experiment
 from mp_baselines.planners.costs.cost_functions import CostCollision, CostComposite, CostGPTrajectory, CostConstraint
-from smd.models import TemporalUnet, UNET_DIM_MULTS
+from smd.models import build_generator_ensemble, build_generator_from_args, load_generator_checkpoint
 from smd.models.diffusion_models.guides import GuideManagerTrajectoriesWithVelocity
 from smd.models.diffusion_models.sample_functions import guide_gradient_steps, ddpm_sample_fn
-from smd.trainer import get_dataset, get_model
+from smd.trainer import get_dataset
 from smd.utils.loading import load_params_from_yaml
 from torch_robotics.robots import *
 from torch_robotics.torch_utils.seed import fix_random_seed
@@ -53,7 +53,6 @@ from torch_robotics.tasks.tasks_ensemble import PlanningTaskEnsemble
 
 from smd.planners.single_agent.common import PlannerOutput
 from smd.planners.single_agent.single_agent_planner_base import SingleAgentPlanner
-from smd.models.diffusion_models.diffusion_ensemble import DiffusionsEnsemble
 
 from smd.common.experiences import PathExperience, PathBatchExperience
 from smd.common.constraints import MultiPointConstraint
@@ -153,32 +152,9 @@ class SMDEnsemble(SingleAgentPlanner):
             robot.dt = dt
 
             # Load prior model
-            diffusion_configs = dict(
-                variance_schedule=args[-1]['variance_schedule'],
-                n_diffusion_steps=args[-1]['n_diffusion_steps'],
-                predict_epsilon=args[-1]['predict_epsilon'],
-            )
-            unet_configs = dict(
-                state_dim=dataset.state_dim,
-                n_support_points=dataset.n_support_points,
-                unet_input_dim=args[-1]['unet_input_dim'],
-                dim_mults=UNET_DIM_MULTS[args[-1]['unet_dim_mults_option']]
-            )
-            diffusion_model = get_model(
-                model_class=args[-1]['diffusion_model_class'],
-                model=TemporalUnet(**unet_configs),
-                tensor_args=tensor_args,
-                **diffusion_configs,
-                **unet_configs
-            )
-            diffusion_model.load_state_dict(
-                torch.load(os.path.join(model_dir, 'checkpoints',
-                                        'ema_model_current_state_dict.pth' if args[-1][
-                                            'use_ema'] else 'model_current_state_dict.pth'),
-                           map_location=tensor_args['device'])
-            )
-            diffusion_model.eval()
-            model = diffusion_model
+            model = build_generator_from_args(args[-1], dataset, tensor_args)
+            model = load_generator_checkpoint(model, model_dir, args[-1], tensor_args)
+            model.eval()
             freeze_torch_model_params(model)
             model = torch.compile(model)
             model.warmup(horizon=n_support_points, device=device)
@@ -296,7 +272,7 @@ class SMDEnsemble(SingleAgentPlanner):
             hard_conds[len(model_ids) - 1] = goal_state_hard_cond
 
         self.transforms = transforms
-        ensemble = DiffusionsEnsemble(self.models, transforms)
+        ensemble = build_generator_ensemble(self.models, transforms, args[0])
         # cross conditioning
         self.cross_conds = {}
         for i in range(len(model_ids) - 1):

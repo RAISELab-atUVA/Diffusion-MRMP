@@ -61,6 +61,7 @@ class TrajectoryDatasetBase(Dataset, abc.ABC):
 
         self.field_key_traj = 'traj'
         self.field_key_task = 'task'
+        self.field_key_task_id = 'task_id'
         self.fields = {}
 
         # load data
@@ -110,6 +111,10 @@ class TrajectoryDatasetBase(Dataset, abc.ABC):
         # task: start and goal state positions [n_trajectories, 2 * state_dim]
         task = torch.cat((trajs_free_pos[..., 0, :], trajs_free_pos[..., -1, :]), dim=-1)
         self.fields[self.field_key_task] = task
+        task_ids = torch.empty((self.n_trajs if hasattr(self, "n_trajs") else len(task)), dtype=torch.long)
+        for trajectory_id, task_id in self.map_trajectory_id_to_task_id.items():
+            task_ids[trajectory_id] = int(task_id)
+        self.fields[self.field_key_task_id] = task_ids
 
     def normalize_all_data(self, *keys):
         for key in keys:
@@ -156,9 +161,11 @@ class TrajectoryDatasetBase(Dataset, abc.ABC):
         field_task_normalized = f'{self.field_key_task}_normalized'
         traj_normalized = self.fields[field_traj_normalized][index]
         task_normalized = self.fields[field_task_normalized][index]
+        task_id = self.fields[self.field_key_task_id][index]
         data = {
             field_traj_normalized: traj_normalized,
-            field_task_normalized: task_normalized
+            field_task_normalized: task_normalized,
+            self.field_key_task_id: task_id,
         }
 
         # build hard conditions

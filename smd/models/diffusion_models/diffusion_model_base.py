@@ -35,13 +35,15 @@ def build_context(model, dataset, input_dict):
     if model.context_model is not None:
         context = dict()
         # (normalized) features of variable environments
-        if dataset.variable_environment:
+        if hasattr(dataset, 'variable_environment') and dataset.variable_environment:
             env_normalized = input_dict[f'{dataset.field_key_env}_normalized']
             context['env'] = env_normalized
 
         # tasks
         task_normalized = input_dict[f'{dataset.field_key_task}_normalized']
         context['tasks'] = task_normalized
+        if 'task_id' in input_dict:
+            context['task_ids'] = input_dict['task_id']
     return context
 
 

@@ -7,6 +7,7 @@ import torch
 from torch.utils.data import DataLoader, random_split
 
 from smd import models, losses, datasets, summaries
+from smd.datasets import TaskBalancedBatchSampler
 from smd.utils import model_loader, pretrain_helper
 from torch_robotics.torch_utils.torch_utils import freeze_torch_model_params
 
@@ -70,8 +71,30 @@ def get_dataset(dataset_class=None,
 
     # split into train and validation
     train_subset, val_subset = random_split(full_dataset, [1-val_set_size, val_set_size])
-    train_dataloader = DataLoader(train_subset, batch_size=batch_size)
-    val_dataloader = DataLoader(val_subset, batch_size=batch_size)
+    use_task_balanced_batches = kwargs.get('generator_family') == 'dfm' or kwargs.get('task_balanced_batching', False)
+    if use_task_balanced_batches:
+        trajectories_per_task = int(kwargs.get('dfm_trajectories_per_task', kwargs.get('dfm_groups_per_task', 4)))
+        tasks_per_batch = int(kwargs.get('dfm_tasks_per_batch', max(1, batch_size // trajectories_per_task)))
+        train_batch_sampler = TaskBalancedBatchSampler(
+            train_subset,
+            tasks_per_batch=tasks_per_batch,
+            trajectories_per_task=trajectories_per_task,
+            drop_last=True,
+        )
+        train_dataloader = DataLoader(train_subset, batch_sampler=train_batch_sampler)
+        try:
+            val_batch_sampler = TaskBalancedBatchSampler(
+                val_subset,
+                tasks_per_batch=tasks_per_batch,
+                trajectories_per_task=trajectories_per_task,
+                drop_last=True,
+            )
+            val_dataloader = DataLoader(val_subset, batch_sampler=val_batch_sampler)
+        except ValueError:
+            val_dataloader = DataLoader(val_subset, batch_size=batch_size)
+    else:
+        train_dataloader = DataLoader(train_subset, batch_size=batch_size)
+        val_dataloader = DataLoader(val_subset, batch_size=batch_size)
 
     if save_indices:
         # save the indices of training and validation sets (for later evaluation)
@@ -87,4 +110,3 @@ def get_summary(summary_class=None, **kwargs):
     SummaryClass = getattr(summaries, summary_class)
     summary_fn = SummaryClass(**kwargs).summary_fn
     return summary_fn
-
