@@ -96,8 +96,9 @@ class InferenceEntrypointTests(unittest.TestCase):
     def test_dfm_loss_uses_temporal_unet_time_argument_name(self):
         source = (REPO_ROOT / "smd/models/flow_models/drift_flow_matching.py").read_text(encoding="utf-8")
 
-        self.assertIn("time=_flatten_task_subgroups_to_groups(t_groups).reshape(-1)", source)
+        self.assertIn("predicted_velocity = self.model(", source)
         self.assertNotIn("self.model(x_t, t=", source)
+        self.assertNotIn("time=_flatten_task_subgroups_to_groups(t_groups).reshape(-1)", source)
 
     def test_projection_infers_agent_count_from_xy_state_dim(self):
         source = (REPO_ROOT / "smd/projection/projection.py").read_text(encoding="utf-8")

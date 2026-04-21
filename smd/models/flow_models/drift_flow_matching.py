@@ -790,8 +790,8 @@ class TrajectoryDriftFlowMatchingModel(nn.Module):
         velocity_context = self._prepare_velocity_context(base_context, h, omega, current=x_t)
         predicted_velocity = self.model(
             x_t,
-            time=_flatten_task_subgroups_to_groups(t_groups).reshape(-1),
-            context=velocity_context,
+            _flatten_task_subgroups_to_groups(t_groups).reshape(-1),
+            velocity_context,
         )
         x_r_pred = x_t + h[:, None, None] * predicted_velocity
         if hard_conds:
