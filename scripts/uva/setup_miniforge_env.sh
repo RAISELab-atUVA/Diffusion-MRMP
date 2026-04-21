@@ -16,6 +16,9 @@ if [[ ! -d "${SMD_ENV_ROOT}" ]]; then
 fi
 
 conda activate "${SMD_ENV_ROOT}"
+pip install setuptools==70.2.0
+pip install torch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 --index-url https://download.pytorch.org/whl/cu121
+conda install -y -c conda-forge ipopt
 pip install -r "${SMD_PROJECT_ROOT}/requirements.txt"
 pip install -e "${SMD_PROJECT_ROOT}/deps/torch_robotics"
 pip install -e "${SMD_PROJECT_ROOT}/deps/experiment_launcher"

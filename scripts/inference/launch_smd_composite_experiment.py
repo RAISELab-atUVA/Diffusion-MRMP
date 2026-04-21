@@ -48,6 +48,13 @@ from smd.config.smd_params import SMDParams as params
 from inference_multi_agent import run_multi_agent_trial
 from launch_multi_agent_experiment import run_multi_agent_experiment
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def build_init4proj_path(map_name, num_agents):
+    return REPO_ROOT / "init4proj_data" / f"{map_name}_init4proj_agent_{num_agents}.pkl"
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Run multi-agent planning experiments.")
@@ -102,13 +109,13 @@ if __name__ == "__main__":
                 experiment_config.num_agents_l = [2]
             elif "three" in instance_name.lower():
                 experiment_config.num_agents_l = [3]
-                init_traj4proj = pickle.load(open(f'../../init4proj_data/{map_name}_init4proj_agent_3.pkl', 'rb'))
+                init_traj4proj = pickle.load(open(build_init4proj_path(args.map_name, 3), 'rb'))
             elif "six" in instance_name.lower():
                 experiment_config.num_agents_l = [6]
-                init_traj4proj = pickle.load(open(f'../../init4proj_data/{map_name}_init4proj_agent_6.pkl', 'rb'))
+                init_traj4proj = pickle.load(open(build_init4proj_path(args.map_name, 6), 'rb'))
             elif "nine" in instance_name.lower():
                 experiment_config.num_agents_l = [9]
-                init_traj4proj = pickle.load(open(f'../../init4proj_data/{map_name}_init4proj_agent_9.pkl', 'rb'))
+                init_traj4proj = pickle.load(open(build_init4proj_path(args.map_name, 9), 'rb'))
 
             
 

@@ -25,4 +25,9 @@ mkdir -p "${SMD_DATA_ROOT}" "${SMD_RUNS_ROOT}" "${SMD_RUNS_ROOT}/slurm"
 LOG_PATH="${SMD_RUNS_ROOT}/slurm/inference_composite_${SLURM_JOB_ID:-manual}.out"
 exec > >(tee -a "${LOG_PATH}") 2>&1
 
-python "${SMD_PROJECT_ROOT}/scripts/inference/launch_smd_composite_experiment.py"
+if [[ -n "${SMD_INFERENCE_ARGS:-}" ]]; then
+  # shellcheck disable=SC2086
+  python "${SMD_PROJECT_ROOT}/scripts/inference/launch_smd_composite_experiment.py" ${SMD_INFERENCE_ARGS}
+else
+  python "${SMD_PROJECT_ROOT}/scripts/inference/launch_smd_composite_experiment.py"
+fi

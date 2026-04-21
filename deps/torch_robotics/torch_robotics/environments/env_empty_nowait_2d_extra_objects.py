@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from matplotlib import pyplot as plt
+from pathlib import Path
 from torch.autograd.functional import jacobian
 
 from torch_robotics.environments import EnvEmptyNoWait2D
@@ -10,13 +11,18 @@ from torch_robotics.torch_utils.torch_utils import DEFAULT_TENSOR_ARGS
 from torch_robotics.visualizers.planning_visualizer import create_fig_and_axes
 
 import pickle
+
+
+INSTANCES_DATA_DIR = Path(__file__).resolve().parents[4] / 'instances_data'
+
+
 class EnvEmptyNoWait2DExtraObjects(EnvEmptyNoWait2D):
 
     def __init__(self, tensor_args=None, **kwargs):
         instance_idx = kwargs['instance_idx']
         map_name = kwargs['map_name']
 
-        file_name = '../../instances_data/'+map_name+'.pkl'
+        file_name = INSTANCES_DATA_DIR / f'{map_name}.pkl'
         with open(file_name, 'rb') as f:
             loaded_set = pickle.load(f)
 

@@ -29,7 +29,6 @@ google-auth-oauthlib==1.0.0
 grpcio==1.70.0
 hf-xet==1.1.3
 huggingface-hub==0.33.0
-Hydra==2.5
 idna==3.4
 imageio==2.35.1
 imageio-ffmpeg==0.5.1

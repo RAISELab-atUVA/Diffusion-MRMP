@@ -29,12 +29,24 @@ class UVAAssetsTests(unittest.TestCase):
         runtime_env = (REPO_ROOT / "scripts/uva/runtime_env.sh").read_text(encoding="utf-8")
         bootstrap = (REPO_ROOT / "scripts/uva/bootstrap_home_checkout.sh").read_text(encoding="utf-8")
         train_job = (REPO_ROOT / "scripts/slurm/train_generator.sbatch").read_text(encoding="utf-8")
+        inference_job = (REPO_ROOT / "scripts/slurm/inference_composite.sbatch").read_text(encoding="utf-8")
+        collision_job = (REPO_ROOT / "scripts/slurm/check_collision.sbatch").read_text(encoding="utf-8")
+        setup_env = (REPO_ROOT / "scripts/uva/setup_miniforge_env.sh").read_text(encoding="utf-8")
+        requirements = (REPO_ROOT / "requirements.txt").read_text(encoding="utf-8")
 
         self.assertIn("SMD_PROJECT_NAME", runtime_env)
         self.assertIn("SMD_PROJECT_ROOT", runtime_env)
         self.assertIn("SMD_RUNS_ROOT", train_job)
         self.assertIn("scripts/train/train_generator.py", train_job)
         self.assertIn("rsync -a", bootstrap)
+        self.assertIn("SMD_INFERENCE_ARGS", inference_job)
+        self.assertIn("launch_smd_composite_experiment.py", inference_job)
+        self.assertIn("SMD_COLLISION_ARGS", collision_job)
+        self.assertIn("is_collision.py", collision_job)
+        self.assertIn("setuptools==70.2.0", setup_env)
+        self.assertIn("torch==2.1.2", setup_env)
+        self.assertIn("ipopt", setup_env)
+        self.assertNotIn("Hydra==2.5", requirements)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,35 @@
+runtime:
+  project_name: Diffusion_MRMP_DFM
+
+model_id: EnvEmptyNoWait2D-RobotCompositeThreePlanarDisk
+generator_family: dfm
+generator_model_class: TrajectoryDriftFlowMatchingModel
+generator_rollout_steps: 32
+loss_class: DriftFlowMatchingLoss
+summary_class: SummaryTrajectoryGeneration
+
+dataset_class: TrajectoryDataset
+dataset_subdir: EnvEmptyNoWait2D-RobotCompositeThreePlanarDisk
+instance_idx: 0
+map_name: instances_empty
+batch_size: 64
+val_set_size: 0.05
+
+dfm_tasks_per_batch: 4
+dfm_trajectories_per_task: 4
+dfm_groups_per_task: 4
+dfm_drift_form: split_v2
+dfm_unconditional_per_group: 64
+dfm_conditioning_type: default
+dfm_omega_min: 1.0
+dfm_omega_max: 9.0
+dfm_omega_exponent: 1.0
+
+unet_input_dim: 32
+unet_dim_mults_option: 1
+
+num_train_steps: 2000
+lr: 0.0001
+steps_til_summary: 100
+steps_til_checkpoint: 500
+debug: false

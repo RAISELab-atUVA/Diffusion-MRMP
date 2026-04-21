@@ -3,8 +3,8 @@ From https://github.com/jacarvalho/mpd-public
 """
 import abc
 import os.path
+from pathlib import Path
 
-import git
 import numpy as np
 import torch
 from torch.utils.data import Dataset
@@ -16,8 +16,7 @@ from torch_robotics.environments.env_base import EnvBase
 from torch_robotics.tasks.tasks import PlanningTask
 from torch_robotics.visualizers.planning_visualizer import PlanningVisualizer
 
-repo = git.Repo('.', search_parent_directories=True)
-dataset_base_dir = os.path.join(repo.working_dir, 'data_trajectories')
+dataset_base_dir = Path(__file__).resolve().parents[2] / 'data_trajectories'
 
 
 class TrajectoryDatasetBase(Dataset, abc.ABC):

@@ -25,6 +25,7 @@ SOFTWARE.
 from abc import ABC, abstractmethod
 import numpy as np
 import torch
+from pathlib import Path
 
 # Project imports.
 from smd.config.smd_params import SMDParams as params
@@ -32,6 +33,14 @@ from smd.common.multi_agent_utils import *
 from torch_robotics.environments import *
 from torch_robotics.environments.env_highways_2d import EnvHighways2D
 import pickle
+
+
+INSTANCES_DATA_DIR = Path(__file__).resolve().parents[2] / 'instances_data'
+
+
+def load_instances_set(map_name):
+    with open(INSTANCES_DATA_DIR / f'{map_name}.pkl', 'rb') as f:
+        return pickle.load(f)
 
 
 def get_planning_problem(planning_problem_class_name: str,
@@ -383,9 +392,7 @@ class EnvEmptyNoWait2DRobotCompositeTwoPlanarDiskRandom(SMDPlanningProblemConfig
     def get_planning_problem(self, num_agents, instance_idx, map_name):
         assert num_agents == 2
 
-        file_name = '../../instances_data/'+map_name+'.pkl'
-        with open(file_name, 'rb') as f:
-            loaded_set = pickle.load(f)
+        loaded_set = load_instances_set(map_name)
         # if num_agents == 3, then idx = 0, if num_agents == 6, then idx = 1, if num_agents == 9, then idx = 2
         if num_agents == 3 or num_agents == 2:
             idx = 0
@@ -420,9 +427,7 @@ class EnvEmptyNoWait2DRobotCompositeThreePlanarDiskRandom(SMDPlanningProblemConf
     def get_planning_problem(self, num_agents, instance_idx, map_name):
         assert num_agents == 3
 
-        file_name = '../../instances_data/'+map_name+'.pkl'
-        with open(file_name, 'rb') as f:
-            loaded_set = pickle.load(f)
+        loaded_set = load_instances_set(map_name)
         # if num_agents == 3, then idx = 0, if num_agents == 6, then idx = 1, if num_agents == 9, then idx = 2
         if num_agents == 3 or num_agents == 2:
             idx = 0
@@ -457,9 +462,7 @@ class EnvEmptyNoWait2DRobotCompositeSixPlanarDiskRandom(SMDPlanningProblemConfig
     def get_planning_problem(self, num_agents, instance_idx, map_name):
         assert num_agents == 6
 
-        file_name = '../../instances_data/'+map_name+'.pkl'
-        with open(file_name, 'rb') as f:
-            loaded_set = pickle.load(f)
+        loaded_set = load_instances_set(map_name)
         if num_agents == 3 or num_agents == 2:
             idx = 0
         elif num_agents == 6:
@@ -493,9 +496,7 @@ class EnvEmptyNoWait2DRobotCompositeNinePlanarDiskRandom(SMDPlanningProblemConfi
     def get_planning_problem(self, num_agents, instance_idx, map_name):
         assert num_agents == 9
 
-        file_name = '../../instances_data/'+map_name+'.pkl'
-        with open(file_name, 'rb') as f:
-            loaded_set = pickle.load(f)
+        loaded_set = load_instances_set(map_name)
         if num_agents == 3 or num_agents == 2:
             idx = 0
         elif num_agents == 6:
