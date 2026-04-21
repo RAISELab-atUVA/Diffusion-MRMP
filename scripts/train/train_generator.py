@@ -53,8 +53,15 @@ def main():
     )
     dataset = train_subset.dataset
     model = build_generator_from_args(config, dataset, tensor_args)
-    loss_fn = get_loss(config["loss_class"], **config)
-    summary_fn = get_summary(config.get("summary_class", "SummaryTrajectoryGeneration"), **config)
+    loss_class = config["loss_class"]
+    loss_args = dict(config)
+    loss_args.pop("loss_class", None)
+    loss_fn = get_loss(loss_class, **loss_args)
+
+    summary_class = config.get("summary_class", "SummaryTrajectoryGeneration")
+    summary_args = dict(config)
+    summary_args.pop("summary_class", None)
+    summary_fn = get_summary(summary_class, **summary_args)
 
     batch_size = config.get("batch_size", 1)
     if config["generator_family"] == "dfm":

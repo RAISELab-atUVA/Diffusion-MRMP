@@ -59,6 +59,14 @@ class InferenceEntrypointTests(unittest.TestCase):
         self.assertNotIn("../../data_trained_models/", composite_source)
         self.assertNotIn("../../data_trained_models/", ensemble_source)
 
+    def test_training_entrypoint_does_not_duplicate_loss_or_summary_class(self):
+        source = (REPO_ROOT / "scripts/train/train_generator.py").read_text(encoding="utf-8")
+
+        self.assertIn('pop("loss_class"', source)
+        self.assertIn('pop("summary_class"', source)
+        self.assertNotIn('get_loss(config["loss_class"], **config)', source)
+        self.assertNotIn('get_summary(config.get("summary_class", "SummaryTrajectoryGeneration"), **config)', source)
+
     def test_planners_do_not_duplicate_dataset_class_when_loading_args(self):
         composite_source = (REPO_ROOT / "smd/planners/multi_agent/smd_composite.py").read_text(encoding="utf-8")
         ensemble_source = (REPO_ROOT / "smd/planners/single_agent/mpd_ensemble.py").read_text(encoding="utf-8")
