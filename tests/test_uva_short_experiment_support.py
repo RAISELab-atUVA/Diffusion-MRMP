@@ -27,6 +27,10 @@ class InferenceEntrypointTests(unittest.TestCase):
 
         self.assertIn("resolve_runtime_config", source)
         self.assertIn("trajectories_root", source)
+        self.assertIn("self.normalizer_keys = [self.field_key_traj, self.field_key_task]", source)
+        self.assertIn("DatasetNormalizer(", source)
+        self.assertIn("{key: self.fields[key] for key in self.normalizer_keys}", source)
+        self.assertNotIn("DatasetNormalizer(self.fields", source)
         self.assertNotIn("git.Repo('.', search_parent_directories=True)", source)
         self.assertNotIn("Path(__file__).resolve().parents[2] / 'data_trajectories'", source)
 

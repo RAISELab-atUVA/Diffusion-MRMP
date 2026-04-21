@@ -81,8 +81,11 @@ class TrajectoryDatasetBase(Dataset, abc.ABC):
         self.trajectory_dim = (self.n_support_points, d)
 
         # normalize the data (for the diffusion model)
-        self.normalizer = DatasetNormalizer(self.fields, normalizer=normalizer)
         self.normalizer_keys = [self.field_key_traj, self.field_key_task]
+        self.normalizer = DatasetNormalizer(
+            {key: self.fields[key] for key in self.normalizer_keys},
+            normalizer=normalizer,
+        )
         self.normalize_all_data(*self.normalizer_keys)
 
     def load_trajectories(self):
