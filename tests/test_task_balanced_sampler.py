@@ -39,6 +39,27 @@ class TaskBalancedBatchSamplerTests(unittest.TestCase):
         self.assertEqual(len(set(task_ids[2:])), 1)
         self.assertNotEqual(task_ids[0], task_ids[2])
 
+    def test_reuses_indices_when_task_has_too_few_trajectories(self):
+        dataset = DummyDataset()
+        subset = Subset(dataset, [0, 3])
+        sampler = TaskBalancedBatchSampler(
+            subset,
+            tasks_per_batch=2,
+            trajectories_per_task=2,
+            drop_last=True,
+        )
+
+        batch = next(iter(sampler))
+        task_ids = [dataset.map_trajectory_id_to_task_id[index] for index in batch]
+
+        self.assertEqual(len(batch), 4)
+        self.assertEqual(len(set(batch[:2])), 1)
+        self.assertEqual(len(set(batch[2:])), 1)
+        self.assertNotEqual(batch[0], batch[2])
+        self.assertEqual(len(set(task_ids[:2])), 1)
+        self.assertEqual(len(set(task_ids[2:])), 1)
+        self.assertNotEqual(task_ids[0], task_ids[2])
+
 
 if __name__ == "__main__":
     unittest.main()

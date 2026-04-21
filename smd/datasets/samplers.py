@@ -31,12 +31,9 @@ class TaskBalancedBatchSampler(Sampler[list[int]]):
         for subset_index in subset.indices:
             task_id = int(self.dataset.map_trajectory_id_to_task_id[int(subset_index)])
             self.task_to_subset_indices[task_id].append(int(subset_index))
-        self.eligible_task_ids = [
-            task_id for task_id, indices in self.task_to_subset_indices.items()
-            if len(indices) >= self.trajectories_per_task
-        ]
+        self.eligible_task_ids = list(self.task_to_subset_indices)
         if not self.eligible_task_ids:
-            raise ValueError("No task in the subset has enough trajectories for task-balanced batching.")
+            raise ValueError("Subset does not contain any task ids for task-balanced batching.")
 
     def __len__(self):
         batch_size = self.tasks_per_batch * self.trajectories_per_task
@@ -63,6 +60,9 @@ class TaskBalancedBatchSampler(Sampler[list[int]]):
 
             for task_id in selected:
                 indices = per_task[task_id]
+                if len(indices) < self.trajectories_per_task:
+                    batch.extend(random.choices(indices, k=self.trajectories_per_task))
+                    continue
                 cursor = cursors[task_id]
                 if cursor + self.trajectories_per_task > len(indices):
                     random.shuffle(indices)
