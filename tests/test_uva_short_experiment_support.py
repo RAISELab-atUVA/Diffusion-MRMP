@@ -64,6 +64,7 @@ class InferenceEntrypointTests(unittest.TestCase):
 
         self.assertIn('pop("loss_class"', source)
         self.assertIn('pop("summary_class"', source)
+        self.assertIn("val_loss_fn=loss_fn", source)
         self.assertNotIn('get_loss(config["loss_class"], **config)', source)
         self.assertNotIn('get_summary(config.get("summary_class", "SummaryTrajectoryGeneration"), **config)', source)
 

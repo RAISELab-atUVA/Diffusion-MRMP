@@ -85,6 +85,7 @@ def main():
         steps_til_checkpoint=config.get("steps_til_checkpoint", 1000),
         model_dir=str(model_dir),
         loss_fn=loss_fn,
+        val_loss_fn=loss_fn,
         summary_fn=summary_fn,
         use_ema=config.get("dfm_use_ema", config.get("use_ema", True)),
         ema_decay=config.get("dfm_ema_decay", config.get("ema_decay", 0.999)),
