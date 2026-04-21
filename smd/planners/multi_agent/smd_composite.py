@@ -117,6 +117,8 @@ class SMDComposite:
         args = load_params_from_yaml(os.path.join(model_dir, "args.yaml"))
         dataset_args = dict(args)
         dataset_class = dataset_args.pop("dataset_class", "TrajectoryDataset")
+        dataset_args.pop("instance_idx", None)
+        dataset_args.pop("map_name", None)
 
         ####################################
         # Load dataset with env, robot, and task.   

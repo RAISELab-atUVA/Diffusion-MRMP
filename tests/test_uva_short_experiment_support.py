@@ -72,6 +72,8 @@ class InferenceEntrypointTests(unittest.TestCase):
         ensemble_source = (REPO_ROOT / "smd/planners/single_agent/mpd_ensemble.py").read_text(encoding="utf-8")
 
         self.assertIn('pop("dataset_class"', composite_source)
+        self.assertIn('pop("instance_idx"', composite_source)
+        self.assertIn('pop("map_name"', composite_source)
         self.assertIn('pop("dataset_class"', ensemble_source)
 
     def test_collision_cli_defaults_follow_runtime_contract(self):
