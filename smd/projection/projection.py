@@ -233,7 +233,7 @@ def apply_projection_alm(x, projection_info, hard_conds, first_projection, init_
     agents_goals_states_normalized = hard_conds[63][0,:]
 
     # get the number of the agents
-    num_agents = int(agents_starts_states_normalized.shape[0]/4)
+    num_agents = int(agents_starts_states_normalized.shape[0]/2)
 
     # unnormalize the x
     agents_starts_states = projection_info.unnormalize_trajectories(agents_starts_states_normalized)
@@ -395,4 +395,3 @@ def apply_projection_alm(x, projection_info, hard_conds, first_projection, init_
 
 
     return x, success
-

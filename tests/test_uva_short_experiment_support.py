@@ -93,6 +93,18 @@ class InferenceEntrypointTests(unittest.TestCase):
         self.assertIn('step_index in projection_steps', source)
         self.assertNotIn('projection_step = int(proj_params.get("projection_step", 0))', source)
 
+    def test_dfm_loss_uses_temporal_unet_time_argument_name(self):
+        source = (REPO_ROOT / "smd/models/flow_models/drift_flow_matching.py").read_text(encoding="utf-8")
+
+        self.assertIn("time=_flatten_task_subgroups_to_groups(t_groups).reshape(-1)", source)
+        self.assertNotIn("self.model(x_t, t=", source)
+
+    def test_projection_infers_agent_count_from_xy_state_dim(self):
+        source = (REPO_ROOT / "smd/projection/projection.py").read_text(encoding="utf-8")
+
+        self.assertIn("shape[0]/2", source)
+        self.assertNotIn("shape[0]/4", source)
+
     def test_torch_utils_uses_collections_abc_mapping(self):
         source = (REPO_ROOT / "deps/torch_robotics/torch_robotics/torch_utils/torch_utils.py").read_text(
             encoding="utf-8"
