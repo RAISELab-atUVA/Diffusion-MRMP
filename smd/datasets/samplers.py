@@ -28,9 +28,9 @@ class TaskBalancedBatchSampler(Sampler[list[int]]):
             raise ValueError("trajectories_per_task must be positive")
 
         self.task_to_subset_indices = defaultdict(list)
-        for subset_index in subset.indices:
-            task_id = int(self.dataset.map_trajectory_id_to_task_id[int(subset_index)])
-            self.task_to_subset_indices[task_id].append(int(subset_index))
+        for subset_offset, dataset_index in enumerate(subset.indices):
+            task_id = int(self.dataset.map_trajectory_id_to_task_id[int(dataset_index)])
+            self.task_to_subset_indices[task_id].append(int(subset_offset))
         self.eligible_task_ids = list(self.task_to_subset_indices)
         if not self.eligible_task_ids:
             raise ValueError("Subset does not contain any task ids for task-balanced batching.")

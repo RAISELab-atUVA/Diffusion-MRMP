@@ -1,6 +1,6 @@
 import unittest
 
-from torch.utils.data import Dataset, Subset
+from torch.utils.data import DataLoader, Dataset, Subset
 
 from smd.datasets.samplers import TaskBalancedBatchSampler
 
@@ -32,7 +32,7 @@ class TaskBalancedBatchSamplerTests(unittest.TestCase):
         )
 
         batch = next(iter(sampler))
-        task_ids = [dataset.map_trajectory_id_to_task_id[index] for index in batch]
+        task_ids = [dataset.map_trajectory_id_to_task_id[subset.indices[index]] for index in batch]
 
         self.assertEqual(len(batch), 4)
         self.assertEqual(len(set(task_ids[:2])), 1)
@@ -50,7 +50,7 @@ class TaskBalancedBatchSamplerTests(unittest.TestCase):
         )
 
         batch = next(iter(sampler))
-        task_ids = [dataset.map_trajectory_id_to_task_id[index] for index in batch]
+        task_ids = [dataset.map_trajectory_id_to_task_id[subset.indices[index]] for index in batch]
 
         self.assertEqual(len(batch), 4)
         self.assertEqual(len(set(batch[:2])), 1)
@@ -59,6 +59,21 @@ class TaskBalancedBatchSamplerTests(unittest.TestCase):
         self.assertEqual(len(set(task_ids[:2])), 1)
         self.assertEqual(len(set(task_ids[2:])), 1)
         self.assertNotEqual(task_ids[0], task_ids[2])
+
+    def test_sampler_outputs_subset_relative_indices(self):
+        dataset = DummyDataset()
+        subset = Subset(dataset, [2, 5])
+        sampler = TaskBalancedBatchSampler(
+            subset,
+            tasks_per_batch=2,
+            trajectories_per_task=1,
+            drop_last=True,
+        )
+        loader = DataLoader(subset, batch_sampler=sampler)
+
+        batch = next(iter(loader)).tolist()
+
+        self.assertEqual(sorted(batch), [2, 5])
 
 
 if __name__ == "__main__":
