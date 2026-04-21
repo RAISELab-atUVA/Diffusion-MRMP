@@ -82,16 +82,7 @@ def get_dataset(dataset_class=None,
             drop_last=True,
         )
         train_dataloader = DataLoader(train_subset, batch_sampler=train_batch_sampler)
-        try:
-            val_batch_sampler = TaskBalancedBatchSampler(
-                val_subset,
-                tasks_per_batch=tasks_per_batch,
-                trajectories_per_task=trajectories_per_task,
-                drop_last=True,
-            )
-            val_dataloader = DataLoader(val_subset, batch_sampler=val_batch_sampler)
-        except ValueError:
-            val_dataloader = DataLoader(val_subset, batch_size=batch_size)
+        val_dataloader = DataLoader(val_subset, batch_size=batch_size)
     else:
         train_dataloader = DataLoader(train_subset, batch_size=batch_size)
         val_dataloader = DataLoader(val_subset, batch_size=batch_size)

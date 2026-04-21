@@ -133,6 +133,12 @@ class InferenceEntrypointTests(unittest.TestCase):
         self.assertIn("if wandb.run is not None", trainer_source)
         self.assertIn("if wandb.run is None", summary_source)
 
+    def test_dfm_validation_loader_uses_plain_dataloader(self):
+        source = (REPO_ROOT / "smd/trainer/train_loaders.py").read_text(encoding="utf-8")
+
+        self.assertIn("val_dataloader = DataLoader(val_subset, batch_size=batch_size)", source)
+        self.assertNotIn("val_batch_sampler = TaskBalancedBatchSampler", source)
+
 
 class CollisionCliTests(unittest.TestCase):
     def test_three_agent_results_can_be_checked_via_cli(self):
