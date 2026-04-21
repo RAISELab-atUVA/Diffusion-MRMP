@@ -118,14 +118,16 @@ class SMD(SingleAgentPlanner):
         os.makedirs(results_dir, exist_ok=True)
 
         args = load_params_from_yaml(os.path.join(model_dir, "args.yaml"))
+        dataset_args = dict(args)
+        dataset_class = dataset_args.pop("dataset_class", "TrajectoryDataset")
 
         ####################################
         # Load dataset with env, robot, task. The TrajectoryDataset type is used here.
         train_subset, train_dataloader, val_subset, val_dataloader = get_dataset(
-            dataset_class='TrajectoryDataset',
+            dataset_class=dataset_class,
             use_extra_objects=True,
             obstacle_cutoff_margin=0.05,
-            **args,
+            **dataset_args,
             tensor_args=tensor_args
         )
         # Extract objects from the dataset.

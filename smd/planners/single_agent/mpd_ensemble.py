@@ -128,13 +128,15 @@ class SMDEnsemble(SingleAgentPlanner):
             model_dir = os.path.join(trained_models_dir, model_id)
             model_dirs.append(model_dir)
             args.append(load_params_from_yaml(os.path.join(model_dir, 'args.yaml')))
+            dataset_args = dict(args[-1])
+            dataset_class = dataset_args.pop("dataset_class", "TrajectoryDataset")
 
             ## Load dataset with env, robot, task ##
             train_subset, train_dataloader, val_subset, val_dataloader = get_dataset(
-                dataset_class='TrajectoryDataset',
+                dataset_class=dataset_class,
                 use_extra_objects=True,
                 obstacle_cutoff_margin=0.01,
-                **args[-1],
+                **dataset_args,
                 tensor_args=tensor_args
             )
             dataset = train_subset.dataset

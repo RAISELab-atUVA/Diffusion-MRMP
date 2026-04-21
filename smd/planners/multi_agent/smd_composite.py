@@ -115,15 +115,17 @@ class SMDComposite:
         os.makedirs(results_dir, exist_ok=True)
 
         args = load_params_from_yaml(os.path.join(model_dir, "args.yaml"))
+        dataset_args = dict(args)
+        dataset_class = dataset_args.pop("dataset_class", "TrajectoryDataset")
 
         ####################################
         # Load dataset with env, robot, and task.   
         train_subset, train_dataloader, val_subset, val_dataloader = get_dataset(
-            dataset_class='TrajectoryDataset',
+            dataset_class=dataset_class,
             use_extra_objects=True,
             obstacle_cutoff_margin=0.01,
             # Important for having the self-collision cost affect robots that are not directly overlapping too.
-            **args,
+            **dataset_args,
             tensor_args=tensor_args,
             instance_idx = kwargs['instance_idx'],
             map_name = kwargs['map_name'],            

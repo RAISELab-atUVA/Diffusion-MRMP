@@ -55,6 +55,13 @@ class InferenceEntrypointTests(unittest.TestCase):
         self.assertNotIn("../../data_trained_models/", composite_source)
         self.assertNotIn("../../data_trained_models/", ensemble_source)
 
+    def test_planners_do_not_duplicate_dataset_class_when_loading_args(self):
+        composite_source = (REPO_ROOT / "smd/planners/multi_agent/smd_composite.py").read_text(encoding="utf-8")
+        ensemble_source = (REPO_ROOT / "smd/planners/single_agent/mpd_ensemble.py").read_text(encoding="utf-8")
+
+        self.assertIn('pop("dataset_class"', composite_source)
+        self.assertIn('pop("dataset_class"', ensemble_source)
+
     def test_collision_cli_defaults_follow_runtime_contract(self):
         source = (REPO_ROOT / "is_collision.py").read_text(encoding="utf-8")
 
