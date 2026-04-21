@@ -265,7 +265,8 @@ def train(model=None, train_dataloader=None, epochs=None, lr=None, steps_til_sum
                             )
                         print(f"t_valididation_summary: {t_validation_summary.elapsed:.4f} sec")
 
-                    wandb.log({**train_losses_log, **validation_losses_log}, step=train_steps_current)
+                    if wandb.run is not None:
+                        wandb.log({**train_losses_log, **validation_losses_log}, step=train_steps_current)
 
                 ####################################################################################################
                 # Early stopping

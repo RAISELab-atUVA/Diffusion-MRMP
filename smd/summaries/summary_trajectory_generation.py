@@ -17,6 +17,8 @@ class SummaryTrajectoryGeneration(SummaryBase):
         super().__init__(**kwargs)
 
     def summary_fn(self, train_step=None, model=None, datasubset=None, prefix='', debug=False, **kwargs):
+        if wandb.run is None:
+            return
 
         dataset = datasubset.dataset
 
@@ -97,4 +99,3 @@ class SummaryTrajectoryGeneration(SummaryBase):
             plt.close(fig_joint_trajs_diffusion)
         if fig_robot_trajs_diffusion is not None:
             plt.close(fig_robot_trajs_diffusion)
-

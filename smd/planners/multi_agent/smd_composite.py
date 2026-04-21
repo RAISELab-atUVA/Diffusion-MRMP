@@ -31,7 +31,11 @@ from experiment_launcher.utils import fix_random_seed
 from smd.common.experiments import TrialSuccessStatus
 from smd.common.constraints import MultiPointConstraint
 from smd.common.multi_agent_utils import *
-from mp_baselines.planners.costs.cost_functions import CostCollision, CostComposite, CostGPTrajectory
+from mp_baselines.planners.costs.cost_functions import (
+    CostCollision,
+    CostComposite,
+    CostGPTrajectoryPositionOnlyWrapper,
+)
 from smd.models import build_generator_from_args, build_task_context, load_generator_checkpoint, resolve_generator_family
 from smd.models.diffusion_models.guides import GuideManagerTrajectoriesWithVelocity
 from smd.models.diffusion_models.sample_functions import guide_gradient_steps, ddpm_sample_fn
@@ -191,7 +195,7 @@ class SMDComposite:
 
         # Cost smoothness.
         cost_smoothness_l = [
-            CostGPTrajectory(
+            CostGPTrajectoryPositionOnlyWrapper(
                 self.robot, self.n_support_points, dt, sigma_gp=1.0,
                 tensor_args=tensor_args
             )

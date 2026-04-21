@@ -35,7 +35,13 @@ from einops._torch_specific import allow_ops_in_compiled_graph  # requires einop
 from typing import Tuple, List
 
 from experiment_launcher import single_experiment_yaml, run_experiment
-from mp_baselines.planners.costs.cost_functions import CostCollision, CostComposite, CostGPTrajectory, CostConstraint, CostMaxVelocity
+from mp_baselines.planners.costs.cost_functions import (
+    CostCollision,
+    CostComposite,
+    CostConstraint,
+    CostGPTrajectoryPositionOnlyWrapper,
+    CostMaxVelocity,
+)
 from smd.models import build_generator_from_args, build_task_context, load_generator_checkpoint, resolve_generator_family
 from smd.models.diffusion_models.guides import GuideManagerTrajectoriesWithVelocity
 from smd.models.diffusion_models.sample_functions import guide_gradient_steps, ddpm_sample_fn
@@ -213,7 +219,7 @@ class SMD(SingleAgentPlanner):
 
         # Cost smoothness
         cost_smoothness_l = [
-            CostGPTrajectory(
+            CostGPTrajectoryPositionOnlyWrapper(
                 robot, n_support_points, dt, sigma_gp=1.0,
                 tensor_args=tensor_args
             )

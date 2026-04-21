@@ -115,6 +115,24 @@ class InferenceEntrypointTests(unittest.TestCase):
         self.assertIn("isinstance(ob, Mapping)", source)
         self.assertNotIn("collections.Mapping", source)
 
+    def test_position_only_planners_use_position_only_gp_wrapper(self):
+        composite_source = (REPO_ROOT / "smd/planners/multi_agent/smd_composite.py").read_text(encoding="utf-8")
+        mpd_source = (REPO_ROOT / "smd/planners/single_agent/mpd.py").read_text(encoding="utf-8")
+        ensemble_source = (REPO_ROOT / "smd/planners/single_agent/mpd_ensemble.py").read_text(encoding="utf-8")
+
+        self.assertIn("CostGPTrajectoryPositionOnlyWrapper", composite_source)
+        self.assertIn("CostGPTrajectoryPositionOnlyWrapper", mpd_source)
+        self.assertIn("CostGPTrajectoryPositionOnlyWrapper", ensemble_source)
+
+    def test_training_skips_wandb_logging_when_uninitialized(self):
+        trainer_source = (REPO_ROOT / "smd/trainer/trainer.py").read_text(encoding="utf-8")
+        summary_source = (REPO_ROOT / "smd/summaries/summary_trajectory_generation.py").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("if wandb.run is not None", trainer_source)
+        self.assertIn("if wandb.run is None", summary_source)
+
 
 class CollisionCliTests(unittest.TestCase):
     def test_three_agent_results_can_be_checked_via_cli(self):
