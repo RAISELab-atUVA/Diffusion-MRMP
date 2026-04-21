@@ -12,8 +12,11 @@ from torch_robotics.visualizers.planning_visualizer import create_fig_and_axes
 
 import pickle
 
+from smd.runtime import resolve_runtime_config
 
-INSTANCES_DATA_DIR = Path(__file__).resolve().parents[4] / 'instances_data'
+
+def get_instances_data_dir(runtime=None) -> Path:
+    return Path(resolve_runtime_config(runtime)["instances_root"])
 
 
 class EnvEmptyNoWait2DExtraObjects(EnvEmptyNoWait2D):
@@ -21,8 +24,9 @@ class EnvEmptyNoWait2DExtraObjects(EnvEmptyNoWait2D):
     def __init__(self, tensor_args=None, **kwargs):
         instance_idx = kwargs['instance_idx']
         map_name = kwargs['map_name']
+        runtime = kwargs.get("runtime")
 
-        file_name = INSTANCES_DATA_DIR / f'{map_name}.pkl'
+        file_name = get_instances_data_dir(runtime) / f'{map_name}.pkl'
         with open(file_name, 'rb') as f:
             loaded_set = pickle.load(f)
 

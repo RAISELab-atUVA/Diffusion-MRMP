@@ -4,6 +4,8 @@ from pathlib import Path
 
 import numpy as np
 
+from smd.runtime import resolve_runtime_config
+
 
 def check_paths_ok(paths, obs_data, robot_data, robot_radius=0.05, threshold=1e-3):
     """Check path validity against obstacles and other robots."""
@@ -38,16 +40,24 @@ def check_paths_ok(paths, obs_data, robot_data, robot_radius=0.05, threshold=1e-
     return True
 
 
-def parse_args():
+def parse_args(runtime):
     parser = argparse.ArgumentParser(description="Check composite planning outputs for collisions.")
-    parser.add_argument("--results-root", default="scripts/inference/results_test", help="Root directory containing experiment outputs.")
+    parser.add_argument(
+        "--results-root",
+        default=runtime["experiments_root"],
+        help="Root directory containing experiment outputs.",
+    )
     parser.add_argument(
         "--experiment-name",
         default="EnvEmptyNoWait2DRobotCompositeNinePlanarDiskRandom",
         help="Experiment instance name embedded in the result directory tree.",
     )
     parser.add_argument("--num-agents", type=int, default=9, help="Number of agents encoded in the saved result tensors.")
-    parser.add_argument("--map-folder", default="instances_data", help="Directory containing pickled map files.")
+    parser.add_argument(
+        "--map-folder",
+        default=runtime["instances_root"],
+        help="Directory containing pickled map files.",
+    )
     parser.add_argument("--planner", default="SMDComposite", help="Planner directory label to match.")
     parser.add_argument("--single-agent-planner", default="SMDEnsemble", help="Single-agent planner directory label to match.")
     return parser.parse_args()
@@ -118,7 +128,8 @@ def evaluate_result_dir(result_dir, map_folder, num_agents):
 
 
 def main():
-    args = parse_args()
+    runtime = resolve_runtime_config()
+    args = parse_args(runtime)
     repo_root = Path(__file__).resolve().parent
     results_root = resolve_path(args.results_root, repo_root)
     map_folder = resolve_path(args.map_folder, repo_root)

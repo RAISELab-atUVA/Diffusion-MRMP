@@ -45,22 +45,26 @@ import multiprocessing as mp
 from smd.common.experiments import MultiAgentPlanningExperimentConfig
 from smd.common.experiments.experiment_utils import *
 from smd.config.smd_params import SMDParams as params
+from smd.runtime import resolve_runtime_config
 from inference_multi_agent import run_multi_agent_trial
 from launch_multi_agent_experiment import run_multi_agent_experiment
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-
-
-def build_init4proj_path(map_name, num_agents):
-    return REPO_ROOT / "init4proj_data" / f"{map_name}_init4proj_agent_{num_agents}.pkl"
+def build_init4proj_path(runtime, map_name, num_agents):
+    return Path(runtime["init4proj_root"]) / f"{map_name}_init4proj_agent_{num_agents}.pkl"
 
 
 if __name__ == "__main__":
+    runtime = resolve_runtime_config()
 
     parser = argparse.ArgumentParser(description="Run multi-agent planning experiments.")
     parser.add_argument("--start_index", type=int, default=0, help="The starting index for samples.")
     parser.add_argument("--end_index", type=int, default=1, help="The ending index for samples (exclusive).")
-    parser.add_argument("--save_path", type=str, default="results_test", help="The base directory to save results.")
+    parser.add_argument(
+        "--save_path",
+        type=str,
+        default=runtime["experiments_root"],
+        help="The base directory to save results.",
+    )
     parser.add_argument("--agents_max_speeds", type=float, default=0.05, help="Max speed per agent for projection.")
     parser.add_argument("--rho", type=float, default=5.0, help="Initial ALM rho.")
     parser.add_argument("--rho_factor", type=float, default=1.05, help="Multiplicative factor to increase rho each ALM iter.")
@@ -107,15 +111,16 @@ if __name__ == "__main__":
             experiment_config.num_agents_l = []
             if "two" in instance_name.lower():
                 experiment_config.num_agents_l = [2]
+                init_traj4proj = pickle.load(open(build_init4proj_path(runtime, args.map_name, 2), 'rb'))
             elif "three" in instance_name.lower():
                 experiment_config.num_agents_l = [3]
-                init_traj4proj = pickle.load(open(build_init4proj_path(args.map_name, 3), 'rb'))
+                init_traj4proj = pickle.load(open(build_init4proj_path(runtime, args.map_name, 3), 'rb'))
             elif "six" in instance_name.lower():
                 experiment_config.num_agents_l = [6]
-                init_traj4proj = pickle.load(open(build_init4proj_path(args.map_name, 6), 'rb'))
+                init_traj4proj = pickle.load(open(build_init4proj_path(runtime, args.map_name, 6), 'rb'))
             elif "nine" in instance_name.lower():
                 experiment_config.num_agents_l = [9]
-                init_traj4proj = pickle.load(open(build_init4proj_path(args.map_name, 9), 'rb'))
+                init_traj4proj = pickle.load(open(build_init4proj_path(runtime, args.map_name, 9), 'rb'))
 
             
 

@@ -9,7 +9,7 @@ import torch
 import yaml
 
 from smd.models import build_generator_from_args
-from smd.runtime import discover_project_root, resolve_runtime_config
+from smd.runtime import resolve_runtime_config
 from smd.trainer import get_dataset, get_loss, get_summary, train
 from smd.trainer.trainer import get_num_epochs
 from torch_robotics.torch_utils.torch_utils import get_torch_device
@@ -35,10 +35,11 @@ def main():
     tensor_args = {"device": device, "dtype": torch.float32}
 
     model_id = config["model_id"]
-    trained_models_root = Path(config.get("trained_models_root", discover_project_root() / "data_trained_models")).resolve()
+    trained_models_root = Path(config.get("trained_models_root", runtime["trained_models_root"])).resolve()
     model_dir = trained_models_root / model_id
     model_dir.mkdir(parents=True, exist_ok=True)
 
+    config["runtime"] = runtime
     config["generator_family"] = config.get("generator_family", "dfm")
     config["loss_class"] = config.get(
         "loss_class",
@@ -63,7 +64,7 @@ def main():
         epochs = get_num_epochs(config["num_train_steps"], batch_size, len(train_subset))
 
     with (model_dir / "args.yaml").open("w", encoding="utf-8") as handle:
-        yaml.safe_dump({**config, "runtime": {"project_name": runtime["project_name"]}}, handle, sort_keys=False)
+        yaml.safe_dump(config, handle, sort_keys=False)
 
     train(
         model=model,

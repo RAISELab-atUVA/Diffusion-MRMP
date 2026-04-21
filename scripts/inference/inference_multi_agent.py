@@ -67,17 +67,19 @@ from smd.common import compute_collision_intensity, is_multi_agent_start_goal_st
 from smd.common.pretty_print import *
 from smd.config.smd_params import SMDParams as params
 from smd.common.experiments import MultiAgentPlanningSingleTrialConfig, get_result_dir_from_trial_config
+from smd.runtime import resolve_runtime_config
 from torch_robotics.environments import *
 
 allow_ops_in_compiled_graph()
 
-TRAINED_MODELS_DIR = '../../data_trained_models/'
 device = 'cuda'
 device = get_torch_device(device)
 tensor_args = {'device': device, 'dtype': torch.float32}
 
 
 def run_multi_agent_trial(test_config: MultiAgentPlanningSingleTrialConfig):
+    runtime = resolve_runtime_config()
+
     # ============================
     # Start time per agent.
     # ============================
@@ -105,7 +107,7 @@ def run_multi_agent_trial(test_config: MultiAgentPlanningSingleTrialConfig):
         'debug': params.debug,
         'seed': params.seed,
         'results_dir': params.results_dir,
-        'trained_models_dir': TRAINED_MODELS_DIR,
+        'trained_models_dir': runtime["trained_models_root"],
         'instance_idx': test_config.instance_idx,
         'map_name': test_config.map_name,
         'init_traj4proj': test_config.init_traj4proj,
@@ -117,6 +119,7 @@ def run_multi_agent_trial(test_config: MultiAgentPlanningSingleTrialConfig):
         'start_time_l': start_time_l,
         'runtime_limit': test_config.runtime_limit,
         'conflict_type_to_constraint_types': {PointConflict: {MultiPointConstraint}},
+        'trained_models_dir': runtime["trained_models_root"],
         'instance_idx': test_config.instance_idx,
         'map_name': test_config.map_name,
         'init_traj4proj': test_config.init_traj4proj,

@@ -46,8 +46,6 @@ from torch_robotics.visualizers.planning_visualizer import PlanningVisualizer, c
 
 allow_ops_in_compiled_graph()
 
-TRAINED_MODELS_DIR = '../../data_trained_models/'
-
 
 class SMDComposite:
     def __init__(self,
@@ -112,7 +110,7 @@ class SMDComposite:
             raise NotImplementedError
 
         ####################################
-        model_dir = os.path.join(TRAINED_MODELS_DIR, self.model_id)
+        model_dir = os.path.join(kwargs['trained_models_dir'], self.model_id)
         results_dir = os.path.join(model_dir, 'results_inference', str(seed))
         os.makedirs(results_dir, exist_ok=True)
 

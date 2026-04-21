@@ -10,13 +10,16 @@ import torch
 from torch.utils.data import Dataset
 
 from smd.datasets.normalization import DatasetNormalizer
+from smd.runtime import resolve_runtime_config
 from smd.utils.loading import load_params_from_yaml
 from torch_robotics import environments, robots
 from torch_robotics.environments.env_base import EnvBase
 from torch_robotics.tasks.tasks import PlanningTask
 from torch_robotics.visualizers.planning_visualizer import PlanningVisualizer
 
-dataset_base_dir = Path(__file__).resolve().parents[2] / 'data_trajectories'
+
+def get_dataset_base_dir(runtime=None) -> Path:
+    return Path(resolve_runtime_config(runtime)["trajectories_root"])
 
 
 class TrajectoryDatasetBase(Dataset, abc.ABC):
@@ -33,7 +36,8 @@ class TrajectoryDatasetBase(Dataset, abc.ABC):
         self.tensor_args = tensor_args
 
         self.dataset_subdir = dataset_subdir
-        self.base_dir = os.path.join(dataset_base_dir, self.dataset_subdir)
+        runtime = resolve_runtime_config(kwargs.get("runtime"))
+        self.base_dir = os.path.join(get_dataset_base_dir(runtime), self.dataset_subdir)
         # Get the args and metadata file from the '0' directory of this dataset. This includes obstacles.
         self.args = load_params_from_yaml(os.path.join(self.base_dir, '0', 'args.yaml'))
         self.metadata = load_params_from_yaml(os.path.join(self.base_dir, '0', 'metadata.yaml'))

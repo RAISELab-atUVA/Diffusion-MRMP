@@ -146,16 +146,30 @@ The integrated repo now carries a UVA-first runtime contract with:
 - `/scratch/$USER/{project_name}/data`
 - `/scratch/$USER/{project_name}/runs`
 - `/home/$USER/envs/{project_name}`
+- `/scratch/$USER/{project_name}/data/data_trajectories`
+- `/scratch/$USER/{project_name}/data/data_trained_models`
+- `/scratch/$USER/{project_name}/data/instances_data`
+- `/scratch/$USER/{project_name}/data/init4proj_data`
+- `/scratch/$USER/{project_name}/runs/experiments`
 
 Helper scripts:
 
 ```bash
 export SMD_PROJECT_NAME=Diffusion_MRMP_DFM
+export SMD_GIT_URL=git@github.com:<your-user>/Diffusion-MRMP.git
+export SMD_GIT_REF=<your-branch>
+export SMD_SLURM_ACCOUNT="${SMD_SLURM_ACCOUNT:-raiselab}"
 bash scripts/uva/bootstrap_home_checkout.sh
 bash scripts/uva/setup_miniforge_env.sh
-sbatch --export=SMD_PROJECT_NAME="$SMD_PROJECT_NAME",SMD_CONFIG=/home/$USER/$SMD_PROJECT_NAME/configs/experiments/composite_three_dfm.yaml /home/$USER/$SMD_PROJECT_NAME/scripts/slurm/train_generator.sbatch
-sbatch --export=SMD_PROJECT_NAME="$SMD_PROJECT_NAME" /home/$USER/$SMD_PROJECT_NAME/scripts/slurm/inference_composite.sbatch
-sbatch --export=SMD_PROJECT_NAME="$SMD_PROJECT_NAME" /home/$USER/$SMD_PROJECT_NAME/scripts/slurm/check_collision.sbatch
+sbatch --account="${SMD_SLURM_ACCOUNT}" \
+  --export=SMD_PROJECT_NAME="$SMD_PROJECT_NAME",SMD_CONFIG=/home/$USER/$SMD_PROJECT_NAME/configs/experiments/composite_three_dfm_smoke.yaml \
+  /home/$USER/$SMD_PROJECT_NAME/scripts/slurm/train_generator.sbatch
+sbatch --account="${SMD_SLURM_ACCOUNT}" \
+  --export=SMD_PROJECT_NAME="$SMD_PROJECT_NAME",SMD_INFERENCE_ARGS="--map_name instances_empty --save_path /scratch/$USER/$SMD_PROJECT_NAME/runs/experiments --start_index 0 --end_index 1" \
+  /home/$USER/$SMD_PROJECT_NAME/scripts/slurm/inference_composite.sbatch
+sbatch --account="${SMD_SLURM_ACCOUNT}" \
+  --export=SMD_PROJECT_NAME="$SMD_PROJECT_NAME",SMD_COLLISION_ARGS="--results-root /scratch/$USER/$SMD_PROJECT_NAME/runs/experiments --experiment-name EnvEmptyNoWait2DRobotCompositeThreePlanarDiskRandom --num-agents 3 --map-folder /scratch/$USER/$SMD_PROJECT_NAME/data/instances_data" \
+  /home/$USER/$SMD_PROJECT_NAME/scripts/slurm/check_collision.sbatch
 ```
 
 

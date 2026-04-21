@@ -18,13 +18,17 @@ class InferenceEntrypointTests(unittest.TestCase):
         )
 
         self.assertIn('args.map_name', source)
+        self.assertIn("resolve_runtime_config", source)
         self.assertNotIn("f'../../init4proj_data/{map_name}_init4proj_agent_3.pkl'", source)
+        self.assertNotIn('default="results_test"', source)
 
     def test_dataset_root_does_not_require_git_metadata(self):
         source = (REPO_ROOT / "smd/datasets/trajectories.py").read_text(encoding="utf-8")
 
-        self.assertIn("Path(__file__).resolve().parents[2]", source)
+        self.assertIn("resolve_runtime_config", source)
+        self.assertIn("trajectories_root", source)
         self.assertNotIn("git.Repo('.', search_parent_directories=True)", source)
+        self.assertNotIn("Path(__file__).resolve().parents[2] / 'data_trajectories'", source)
 
     def test_instance_data_paths_are_file_anchored(self):
         env_source = (
@@ -32,10 +36,33 @@ class InferenceEntrypointTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         config_source = (REPO_ROOT / "smd/config/smd_experiment_configs.py").read_text(encoding="utf-8")
 
-        self.assertIn("Path(__file__).resolve()", env_source)
+        self.assertIn("resolve_runtime_config", env_source)
+        self.assertIn("instances_root", env_source)
         self.assertNotIn("'../../instances_data/'", env_source)
-        self.assertIn("Path(__file__).resolve()", config_source)
+        self.assertIn("resolve_runtime_config", config_source)
+        self.assertIn("instances_root", config_source)
         self.assertNotIn("'../../instances_data/'", config_source)
+
+    def test_train_and_planners_use_runtime_model_roots(self):
+        train_source = (REPO_ROOT / "scripts/train/train_generator.py").read_text(encoding="utf-8")
+        trial_source = (REPO_ROOT / "scripts/inference/inference_multi_agent.py").read_text(encoding="utf-8")
+        composite_source = (REPO_ROOT / "smd/planners/multi_agent/smd_composite.py").read_text(encoding="utf-8")
+        ensemble_source = (REPO_ROOT / "smd/planners/single_agent/mpd_ensemble.py").read_text(encoding="utf-8")
+
+        self.assertIn('runtime["trained_models_root"]', train_source)
+        self.assertIn("trained_models_dir", trial_source)
+        self.assertNotIn("../../data_trained_models/", trial_source)
+        self.assertNotIn("../../data_trained_models/", composite_source)
+        self.assertNotIn("../../data_trained_models/", ensemble_source)
+
+    def test_collision_cli_defaults_follow_runtime_contract(self):
+        source = (REPO_ROOT / "is_collision.py").read_text(encoding="utf-8")
+
+        self.assertIn("resolve_runtime_config", source)
+        self.assertIn("experiments_root", source)
+        self.assertIn("instances_root", source)
+        self.assertNotIn("scripts/inference/results_test", source)
+        self.assertNotIn('default="instances_data"', source)
 
 
 class CollisionCliTests(unittest.TestCase):

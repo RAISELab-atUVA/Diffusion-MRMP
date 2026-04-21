@@ -30,16 +30,18 @@ from pathlib import Path
 # Project imports.
 from smd.config.smd_params import SMDParams as params
 from smd.common.multi_agent_utils import *
+from smd.runtime import resolve_runtime_config
 from torch_robotics.environments import *
 from torch_robotics.environments.env_highways_2d import EnvHighways2D
 import pickle
 
 
-INSTANCES_DATA_DIR = Path(__file__).resolve().parents[2] / 'instances_data'
+def get_instances_data_dir(runtime=None) -> Path:
+    return Path(resolve_runtime_config(runtime)["instances_root"])
 
 
 def load_instances_set(map_name):
-    with open(INSTANCES_DATA_DIR / f'{map_name}.pkl', 'rb') as f:
+    with open(get_instances_data_dir() / f'{map_name}.pkl', 'rb') as f:
         return pickle.load(f)
 
 

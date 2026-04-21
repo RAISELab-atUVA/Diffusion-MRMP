@@ -1,5 +1,4 @@
 #!/bin/bash
-#SBATCH -A <allocation>
 #SBATCH --partition=standard
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
@@ -18,7 +17,10 @@ module load miniforge
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate "${SMD_ENV_ROOT}"
 
-mkdir -p "${SMD_RUNS_ROOT}/slurm"
+mkdir -p \
+  "${SMD_INSTANCES_ROOT}" \
+  "${SMD_EXPERIMENTS_ROOT}" \
+  "${SMD_RUNS_ROOT}/slurm"
 
 LOG_PATH="${SMD_RUNS_ROOT}/slurm/check_collision_${SLURM_JOB_ID:-manual}.out"
 exec > >(tee -a "${LOG_PATH}") 2>&1

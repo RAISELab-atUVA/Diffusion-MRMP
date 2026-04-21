@@ -1,5 +1,4 @@
 #!/bin/bash
-#SBATCH -A <allocation>
 #SBATCH --partition=gpu
 #SBATCH --constraint=a40|a6000|a100
 #SBATCH --gres=gpu:1
@@ -20,7 +19,11 @@ module load miniforge
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate "${SMD_ENV_ROOT}"
 
-mkdir -p "${SMD_DATA_ROOT}" "${SMD_RUNS_ROOT}" "${SMD_RUNS_ROOT}/slurm"
+mkdir -p \
+  "${SMD_DATA_ROOT}" \
+  "${SMD_TRAINED_MODELS_ROOT}" \
+  "${SMD_RUNS_ROOT}" \
+  "${SMD_RUNS_ROOT}/slurm"
 
 LOG_PATH="${SMD_RUNS_ROOT}/slurm/train_generator_${SLURM_JOB_ID:-manual}.out"
 exec > >(tee -a "${LOG_PATH}") 2>&1
