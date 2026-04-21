@@ -86,6 +86,15 @@ class InferenceEntrypointTests(unittest.TestCase):
         self.assertNotIn("scripts/inference/results_test", source)
         self.assertNotIn('default="instances_data"', source)
 
+    def test_multi_agent_launcher_raises_when_trials_fail(self):
+        source = (REPO_ROOT / "scripts/inference/launch_multi_agent_experiment.py").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("failed_trials = []", source)
+        self.assertIn("failed_trials.append((single_trial_config, e))", source)
+        self.assertIn("raise RuntimeError(", source)
+
     def test_dfm_projection_logic_accepts_scalar_or_list_steps(self):
         source = (REPO_ROOT / "smd/models/flow_models/drift_flow_matching.py").read_text(encoding="utf-8")
 

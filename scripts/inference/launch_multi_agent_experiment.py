@@ -28,6 +28,7 @@ from inference_multi_agent import run_multi_agent_trial
 def run_multi_agent_experiment(experiment_config: MultiAgentPlanningExperimentConfig):
     # Run the multi-agent planning experiment.
     startt = time.time()
+    failed_trials = []
     # Create the experiment config.
     experiment_config.time_str = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     # Get single trial configs from the experiment config.
@@ -38,6 +39,7 @@ def run_multi_agent_experiment(experiment_config: MultiAgentPlanningExperimentCo
         try:
             run_multi_agent_trial(single_trial_config)
         except Exception as e:
+            failed_trials.append((single_trial_config, e))
             print("Error in run_multi_agent_experiment: ", e)
             # Save to a file.
             with open(f"error_{experiment_config.time_str}.txt", "a") as f:
@@ -49,4 +51,8 @@ def run_multi_agent_experiment(experiment_config: MultiAgentPlanningExperimentCo
 
     # Print the runtime.
     print("Runtime: ", time.time() - startt)
+    if failed_trials:
+        raise RuntimeError(
+            f"{len(failed_trials)} multi-agent trial(s) failed; see error_{experiment_config.time_str}.txt for details."
+        )
     print("Run: OK.")
