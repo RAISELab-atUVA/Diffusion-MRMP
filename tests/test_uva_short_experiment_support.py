@@ -86,6 +86,22 @@ class InferenceEntrypointTests(unittest.TestCase):
         self.assertNotIn("scripts/inference/results_test", source)
         self.assertNotIn('default="instances_data"', source)
 
+    def test_dfm_projection_logic_accepts_scalar_or_list_steps(self):
+        source = (REPO_ROOT / "smd/models/flow_models/drift_flow_matching.py").read_text(encoding="utf-8")
+
+        self.assertIn('isinstance(projection_step, (list, tuple))', source)
+        self.assertIn('step_index in projection_steps', source)
+        self.assertNotIn('projection_step = int(proj_params.get("projection_step", 0))', source)
+
+    def test_torch_utils_uses_collections_abc_mapping(self):
+        source = (REPO_ROOT / "deps/torch_robotics/torch_robotics/torch_utils/torch_utils.py").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("from collections.abc import Mapping", source)
+        self.assertIn("isinstance(ob, Mapping)", source)
+        self.assertNotIn("collections.Mapping", source)
+
 
 class CollisionCliTests(unittest.TestCase):
     def test_three_agent_results_can_be_checked_via_cli(self):

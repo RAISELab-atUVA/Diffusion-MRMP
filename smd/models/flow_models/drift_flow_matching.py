@@ -527,10 +527,15 @@ class TrajectoryDriftFlowMatchingModel(nn.Module):
     ) -> torch.Tensor:
         if projection_info is None or proj_params is None:
             return x
-        projection_step = int(proj_params.get("projection_step", 0))
-        if projection_step <= 0:
-            return x
-        should_project = ((step_index + 1) % projection_step == 0) or (step_index == total_steps - 1)
+        projection_step = proj_params.get("projection_step", 0)
+        if isinstance(projection_step, (list, tuple)):
+            projection_steps = {int(step) for step in projection_step}
+            should_project = (step_index in projection_steps) or (step_index == total_steps - 1)
+        else:
+            projection_step = int(projection_step)
+            if projection_step <= 0:
+                return x
+            should_project = ((step_index + 1) % projection_step == 0) or (step_index == total_steps - 1)
         if not should_project:
             return x
         from smd.projection.projection import apply_projection_alm

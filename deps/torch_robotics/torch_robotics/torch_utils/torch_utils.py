@@ -1,5 +1,5 @@
-import collections
 import random
+from collections.abc import Mapping
 from typing import List
 
 import numpy as np
@@ -19,7 +19,7 @@ def get_torch_device(device='cuda'):
 DEFAULT_TENSOR_ARGS = {'device': get_torch_device('cuda'), 'dtype': torch.float32}
 
 def dict_to_device(ob, device):
-    if isinstance(ob, collections.Mapping):
+    if isinstance(ob, Mapping):
         return {k: dict_to_device(v, device) for k, v in ob.items()}
     else:
         return ob.to(device)
@@ -158,5 +158,4 @@ def torch_intersect_1d(a, b):
     a_cat_b, counts = torch.cat([a, b]).unique(return_counts=True)
     intersection = a_cat_b[torch.where(counts.gt(1))]
     return intersection
-
 
